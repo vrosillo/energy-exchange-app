@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import {resolve} from 'path';
 
 const getWeb3 = () => {
     return new Promise ((resolve, reject) =>{
