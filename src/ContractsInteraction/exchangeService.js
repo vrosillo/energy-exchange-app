@@ -3,10 +3,7 @@ export class ExchangeService{
         this.contract=contract;
     }
 
-    ///////////////////
-    //Agent functions//
-    ///////////////////
-    
+        
     //////////////////
     //Sell functions//
     //////////////////
