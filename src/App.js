@@ -5,8 +5,11 @@ import getWeb3 from "./getWeb3";
 import ExchangeContract from './ContractsInteraction/exchange';
 import {ExchangeService} from './ContractsInteraction/exchangeService';
 
+
 //Import Visual Components
 import Panel from "./MyComponents/Panel";
+import AppHeader from "./MyComponents/AppHeader";
+import AppFooter from "./MyComponents/AppFooter";
 
 //utility functions
 
@@ -23,7 +26,8 @@ export class App extends Component {
         this.state = {
           account: undefined,
           balance :0,
-          sellOffers: []
+          sellOffers: [],
+          agentSellOffers:[]
         };
     }  
 
@@ -91,12 +95,21 @@ export class App extends Component {
       this.setState({
         sellOffers
       });
-  }
+    }
+
+    //functions from agent contract//
+    /*async AgentGetOffer() {
+      let agentSellOffers = await this.exchangeService.agentGetSellOffers(agentABI);
+      this.setState({
+        agentSellOffers
+      });
+    }*/
+
 
     ////////
     //load--execute a function at the beggining of everything//
     ////////
-    
+     
     async load(){
       this.getBalance();
       this.getOffer();
@@ -105,48 +118,39 @@ export class App extends Component {
 
     render() {
       return <React.Fragment>
-          <div className="jumbotron">
-              <h4 className="display-4">Welcome to the Exchange!</h4>
-          </div>
+        <AppHeader/>
+
+        <br/>
+
+        <div className="market-dashboard">
+
+          <h2><strong>Market Dashboard</strong></h2>
 
           <div className="row">
+
+            <div className="col-sm">
+              <h3>Agent</h3>
+              <br/>
+              <br/>
               <div className="col-sm">
-                  <Panel title="Balance">
-                        <p><strong>{this.state.account}</strong></p>
-                        <span><strong>Balance</strong>: {this.state.balance}</span>
-                  </Panel>
+                <span><strong>Account</strong>: {this.state.account}</span>
               </div>
               <div className="col-sm">
-                  <Panel title="2">
-                      
-                  </Panel>
-              </div>
-          </div>
-          <div className="row">
-              <div className="col-sm">
-                  <Panel title="Agents">
-                    <span>Deployed agents</span>
-                    <button onClick={()=> this.getAgents()}>GetAgentDetails</button>
-                    <button onClick={()=> this.newAgent()}>AddNewAgent</button>   
-                                
-                  </Panel>
+                <span><strong>Balance</strong>: {this.state.balance}</span>
               </div>
               <div className="col-sm">
-                  <Panel title="Sells">
-                      <button onClick={()=> this.getOffer()}>GetSellOffer</button>
-                      <button onClick={()=> this.addOffer()}>SaveOffer</button>   
-                  </Panel>
-              </div>
-          </div>
-          <div className="row">
+                <span><strong>Exchange Status</strong>: Registered</span>
+              </div>    
               <div className="col-sm">
-                  <Panel title="Buy">
-                      <span>Buy orders</span>
-                      <button>Add new buy</button>
-                  </Panel>
-              </div>
+                <button onClick={()=> this.newAgent()}>Register</button>   
+              </div>       
+            </div>
+
+            
+            <div className="col-sm">
+              <h3>Orders</h3>
               <div className="col-sm">
-                  <Panel title="List of sells">
+              <Panel title="Sell Orders">
                   {this.state.sellOffers.map((offer, i) => {
                             return <div key={i}>
                                 <span>Id:{offer.OrderId}  </span>
@@ -160,7 +164,83 @@ export class App extends Component {
                         })}
                   </Panel>
               </div>
+              <div className="col-sm">
+                <Panel title="Buy Orders"/>
+              </div>
+            </div>
           </div>
+        </div>      
+        
+        <br/>
+
+        <div className="agent-dashboard">
+          <h2><strong>Agent Operation Dashboard</strong></h2>
+          <div className="row">
+              <div className="col-sm">
+                  <h4>Units of energy</h4>
+                  <input></input>
+                  <h4>Price per unit of energy</h4>
+                  <input></input>
+                  <br></br>
+                  <button onClick={()=> this.addOffer()}>AddSellOffer</button>   
+              </div>
+              <div className="col-sm">
+                  <h4>Sell Order Id</h4>
+                  <input></input>
+                  <h4>Seller agent address</h4>
+                  <input></input>
+                  <br></br>
+                  <button>Buy energy</button>
+              </div>
+              <div className="col-sm">
+                  <h4>Sell Order Id</h4>
+                  <input></input>
+                  <br></br>
+                  <button>Cancel sell offer</button>
+              </div>
+          </div>
+          
+        </div> 
+        
+        <br/>
+         
+        <div className="agent-dashboard">
+
+          <h2><strong>Agent Details Dashboard</strong></h2>
+
+          <div className="row">
+
+            <div className="col-sm">
+              <h3>Agent</h3>
+              <br/>
+              <br/>
+              <div className="col-sm">
+                <span><strong>Id</strong></span>
+              </div>
+              <div className="col-sm">
+                <span><strong>Contract Address</strong></span>
+              </div>
+              <div className="col-sm">
+                <span><strong>Energy available to sell</strong></span>
+              </div>          
+            </div>
+
+            
+            <div className="col-sm">
+              <h3>Smart Meter Real Time Data</h3>
+              <div className="col-sm">
+                <h4>Sell Order Id</h4>
+                
+                <button>Update energy available to sell</button>
+              </div>
+              
+            </div>
+          </div>
+        </div>   
+
+        <br/>
+        <AppFooter/>   
+          
       </React.Fragment>
   }
 }
