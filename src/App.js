@@ -28,7 +28,8 @@ export class App extends Component {
           balance :0,
           sellOffers: [],
           agentSellOffers:[],
-          isMember: 'false'
+          isMember: 'false',
+          display:false
         };
     }  
 
@@ -83,16 +84,17 @@ export class App extends Component {
 
     async getRegStatus(){
       let isMember= await this.exchangeService.getRegistrationStatus(this.state.account);
-      console.log(isMember);
+      let display;
       if(isMember==true){
-        isMember='true'
-        console.log('inside the is member ==true')
+        isMember='true';
+        display=true;
       }else{
-        isMember='false'
-        console.log('inside the is member ==false')
+        isMember='false';
+        display=false;
       }
       this.setState({
-        isMember
+        isMember,
+        display
       });
       
     }
@@ -144,62 +146,17 @@ export class App extends Component {
     }
 
     render() {
-      return <React.Fragment>
-        <AppHeader/>
 
-        <br/>
+      let noShowAgent = (<div>
+        <button onClick={()=> this.newAgent()}>Register</button>  
+        <p>Please register yourself to start the interaction with the Exchange</p>
+      </div>);
 
-        <div className="market-dashboard">
+      if(this.state.display){
+        noShowAgent=null;
+      }
 
-          <h2><strong>Market Dashboard</strong></h2>
-
-          <div className="row">
-
-            <div className="col-sm">
-              <h3>Agent</h3>
-              <br/>
-              <br/>
-              <div className="col-sm">
-                <span><strong>Account</strong>: {this.state.account}</span>
-              </div>
-              <div className="col-sm">
-                <span><strong>Balance</strong>: {this.state.balance}</span>
-              </div>
-              <div className="col-sm">
-                <span><strong>Exchange Status</strong>: {this.state.isMember}</span>
-              </div>    
-              <div className="col-sm">
-                <button onClick={()=> this.newAgent()}>Register</button>   
-              </div>       
-            </div>
-
-            
-            <div className="col-sm">
-              <h3>Orders</h3>
-              <div className="col-sm">
-              <Panel title="Sell Orders">
-                  {this.state.sellOffers.map((offer, i) => {
-                            return <div key={i}>
-                                <span>Id:{offer.OrderId}  </span>
-                                <span>Agent:{offer.OrderAgent}  </span>
-                                <span>Unit:{offer.OrderUnit}</span>
-                                <span>Price:{offer.OrderPricePerUnit}  </span>
-                                <span>TotalPrice:{offer.OrderTotalPrice}  </span>
-                                <span>IsAvailable:{offer.OrderIsAvailable}  </span>
-                               
-                            </div>
-                        })}
-                  </Panel>
-              </div>
-              <div className="col-sm">
-                <Panel title="Buy Orders"/>
-              </div>
-            </div>
-          </div>
-        </div>      
-        
-        <br/>
-
+      let showAgent = (<div>
         <div className="agent-dashboard">
           <h2><strong>Agent Operation Dashboard</strong></h2>
           <div className="row">
@@ -264,6 +221,73 @@ export class App extends Component {
             </div>
           </div>
         </div>   
+      </div>
+      );
+
+      if(!this.state.display){
+        showAgent=null;
+      }
+
+      return <React.Fragment>
+        <AppHeader/>
+
+        <br/>
+
+        <div className="market-dashboard">
+
+          <h2><strong>Market Dashboard</strong></h2>
+
+          <div className="row">
+
+            <div className="col-sm">
+              <h3>Agent</h3>
+              <br/>
+              <br/>
+              <div className="col-sm">
+                <span><strong>Account</strong>: {this.state.account}</span>
+              </div>
+              <div className="col-sm">
+                <span><strong>Balance</strong>: {this.state.balance}</span>
+              </div>
+              <div className="col-sm">
+                <span><strong>Exchange Status</strong>: {this.state.isMember}</span>
+              </div>    
+              <div className="col-sm">
+                
+                {noShowAgent}
+              </div>       
+            </div>
+
+            
+            <div className="col-sm">
+              <h3>Orders</h3>
+              <div className="col-sm">
+              <Panel title="Sell Orders">
+                  {this.state.sellOffers.map((offer, i) => {
+                            return <div key={i}>
+                                <span>Id:{offer.OrderId}  </span>
+                                <span>Agent:{offer.OrderAgent}  </span>
+                                <span>Unit:{offer.OrderUnit}</span>
+                                <span>Price:{offer.OrderPricePerUnit}  </span>
+                                <span>TotalPrice:{offer.OrderTotalPrice}  </span>
+                                <span>IsAvailable:{offer.OrderIsAvailable}  </span>
+                               
+                            </div>
+                        })}
+                  </Panel>
+              </div>
+              <div className="col-sm">
+                <Panel title="Buy Orders"/>
+              </div>
+            </div>
+          </div>
+        </div>      
+        
+        <br/>
+
+        {showAgent}
+
+        
 
         <br/>
         <AppFooter/>   
