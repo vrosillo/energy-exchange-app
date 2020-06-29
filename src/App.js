@@ -31,8 +31,22 @@ export class App extends Component {
           agentSellOffers:[],
           isMember: 'false',
           display:false,
-          inputUnitsOfEnergy: undefined
+          //inputs elements
+          inputUnitsOfEnergy: undefined,
+          inputPricePerUnit: undefined,
+          inputSellOrderId: undefined,
+          inputSellerOrderAddress: undefined,
+          inputCancelSellOrderId:undefined
+          
         };
+
+        //input change instance
+        this.unitsOfEnergyChange=this.unitsOfEnergyChange.bind(this);
+        this.pricePerUnitChange=this.pricePerUnitChange.bind(this);
+        this.sellOrderIdChange=this.sellOrderIdChange.bind(this);
+        this.sellerOrderAddressChange=this.sellerOrderAddressChange.bind(this);
+        this.cancelSellOrderIdChange=this.cancelSellOrderIdChange.bind(this);
+
     }  
 
 
@@ -112,7 +126,7 @@ export class App extends Component {
     //////////////////
 
     async addOffer(){
-      await this.exchangeService.newSell(this.state.account,10,10,this.state.account);
+      await this.exchangeService.newSell(this.state.account,this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,this.state.account);
     }
 
     async getOffer() {
@@ -133,6 +147,29 @@ export class App extends Component {
     //////////////////////////
     //Input update functions//
     //////////////////////////
+    
+    
+    
+    
+    unitsOfEnergyChange(event) {
+      this.setState({inputUnitsOfEnergy: event.target.value})      
+    }
+
+    pricePerUnitChange(event) {
+      this.setState({inputPricePerUnit: event.target.value})     
+    }
+
+    sellOrderIdChange(event) {
+      this.setState({inputSellOrderId: event.target.value})   
+    }
+
+    sellerOrderAddressChange(event) {
+      this.setState({inputSellerOrderAddress: event.target.value})     
+    }
+
+    cancelSellOrderIdChange(event) {
+      this.setState({inputCancelSellOrderId: event.target.value})    
+    }
     
     /*updateUnitsOfEnergy = event =>{
       console.log('event.target.value',event.target.value);
@@ -165,28 +202,34 @@ export class App extends Component {
           <h2><strong>Agent Operation Dashboard</strong></h2>
           <div className="row">
               <div className="col-sm">
-                  <h4>Units of energy</h4>
-                  <input
-                   
-                   onChange={this.updateUnitsOfEnergy}>
-
-                  </input>
                   <h4>Price per unit of energy</h4>
-                  <input></input>
+                  <input type="text" name="pricePerUnit" value ={this.state.inputPricePerUnit}
+                    onChange={this.pricePerUnitChange}
+                  />
+                  <h4>Units of energy</h4>
+                  <input type="text" name="unitsOfEnergy" value ={this.state.inputUnitsOfEnergy}
+                    onChange={this.unitsOfEnergyChange}
+                  />
                   <br></br>
                   <button onClick={()=> this.addOffer()}>AddSellOffer</button>   
               </div>
               <div className="col-sm">
                   <h4>Sell Order Id</h4>
-                  <input></input>
+                  <input type="text" name="sellOrderId" value ={this.state.inputSellOrderId}
+                    onChange={this.sellOrderIdChange}
+                  />
                   <h4>Seller agent address</h4>
-                  <input></input>
+                  <input type="text" name="sellOrderAddress" value ={this.state.inputSellerOrderAddress}
+                    onChange={this.sellerOrderAddressChange}
+                  />
                   <br></br>
                   <button>Buy energy</button>
               </div>
               <div className="col-sm">
                   <h4>Sell Order Id</h4>
-                  <input></input>
+                  <input type="text" name="cancelSellorderId" value ={this.state.inputCancelSellOrderId}
+                    onChange={this.cancelSellOrderIdChange}
+                  />
                   <br></br>
                   <button>Cancel sell offer</button>
               </div>
