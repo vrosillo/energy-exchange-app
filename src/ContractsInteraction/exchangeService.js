@@ -9,7 +9,7 @@ export class ExchangeService{
     //////////////////
 
     async newSell(_agentAddr,_pricePerUnit,_unit,from){
-        return this.contract.saveSellOrder(_agentAddr,_pricePerUnit,_unit,{from});
+        await this.contract.saveSellOrder(_agentAddr,_pricePerUnit,_unit,{from});
     }
 
     async getSellOffers(){
@@ -57,8 +57,14 @@ export class ExchangeService{
         
     }
 
-    createAgentContract(from){
-         this.contract.createAgentContract(1,1,10,{from});
+    async createAgentContract(from){
+        await this.contract.createAgentContract(1,1,10,{from});
+    }
+
+    async getRegistrationStatus(agentAddress){
+        let status= await this.contract.getRegistrationStatus(agentAddress);
+        return status;
+
     }
 
     /////////////////////////////////

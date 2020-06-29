@@ -27,7 +27,8 @@ export class App extends Component {
           account: undefined,
           balance :0,
           sellOffers: [],
-          agentSellOffers:[]
+          agentSellOffers:[],
+          isMember: 'false'
         };
     }  
 
@@ -43,6 +44,21 @@ export class App extends Component {
         this.toEther = converter(this.web3);
 
         var account = (await this.web3.eth.getAccounts())[0];
+
+        //metamask method that refresh the active account in the web
+        this.web3.currentProvider.publicConfigStore.on('update',async function(event){
+          this.setState({
+            account: event.selectedAddress.toLowerCase()
+          },()=>{
+            this.load();
+          });
+        }.bind(this));
+        
+        this.setState({
+          account: account
+        },()=>{
+          this.load();
+        });
         
         this.setState({
           account: account
@@ -65,12 +81,22 @@ export class App extends Component {
     //Agent functions//
     ///////////////////
 
-    async getAgents() {
-      await this.exchangeService.getAgentContracts();
-
+    async getRegStatus(){
+      let isMember= await this.exchangeService.getRegistrationStatus(this.state.account);
+      console.log(isMember);
+      if(isMember==true){
+        isMember='true'
+        console.log('inside the is member ==true')
+      }else{
+        isMember='false'
+        console.log('inside the is member ==false')
+      }
+      this.setState({
+        isMember
+      });
+      
     }
 
-  
 
     async newAgent(){
       await this.exchangeService.createAgentContract(this.state.account);
@@ -113,6 +139,7 @@ export class App extends Component {
     async load(){
       this.getBalance();
       this.getOffer();
+      this.getRegStatus();
       
     }
 
@@ -139,7 +166,7 @@ export class App extends Component {
                 <span><strong>Balance</strong>: {this.state.balance}</span>
               </div>
               <div className="col-sm">
-                <span><strong>Exchange Status</strong>: Registered</span>
+                <span><strong>Exchange Status</strong>: {this.state.isMember}</span>
               </div>    
               <div className="col-sm">
                 <button onClick={()=> this.newAgent()}>Register</button>   
