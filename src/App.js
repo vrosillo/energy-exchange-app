@@ -250,7 +250,7 @@ export class App extends Component {
                 <span><strong>Balance</strong>: {this.state.balance}</span>
               </div>
               <div className="col-sm">
-                <span><strong>Exchange Status</strong>: {this.state.isMember}</span>
+                <span><strong>Is Member?</strong> {this.state.isMember}</span>
               </div>    
               <div className="col-sm">
                 
