@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import getWeb3 from "./getWeb3";
+import ReactDOM from "react-dom";
 
 //Import contracts and functions
 import ExchangeContract from './ContractsInteraction/exchange';
@@ -29,9 +30,11 @@ export class App extends Component {
           sellOffers: [],
           agentSellOffers:[],
           isMember: 'false',
-          display:false
+          display:false,
+          inputUnitsOfEnergy: undefined
         };
     }  
+
 
     async componentDidMount(){
         //define our instaled version of Web3 as the libary to be run on the browser
@@ -112,12 +115,6 @@ export class App extends Component {
       await this.exchangeService.newSell(this.state.account,10,10,this.state.account);
     }
 
-    /*
-    async getOffer(){
-      await this.exchangeService.getSellOffers();
-    }
-    */
-
     async getOffer() {
       let sellOffers = await this.exchangeService.getSellOffers();
       this.setState({
@@ -133,6 +130,13 @@ export class App extends Component {
       });
     }*/
 
+    //////////////////////////
+    //Input update functions//
+    //////////////////////////
+    
+    /*updateUnitsOfEnergy = event =>{
+      console.log('event.target.value',event.target.value);
+    }*/
 
     ////////
     //load--execute a function at the beggining of everything//
@@ -162,7 +166,11 @@ export class App extends Component {
           <div className="row">
               <div className="col-sm">
                   <h4>Units of energy</h4>
-                  <input></input>
+                  <input
+                   
+                   onChange={this.updateUnitsOfEnergy}>
+
+                  </input>
                   <h4>Price per unit of energy</h4>
                   <input></input>
                   <br></br>
