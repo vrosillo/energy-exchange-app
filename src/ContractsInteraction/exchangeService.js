@@ -58,9 +58,9 @@ export class ExchangeService{
         
     }
 
-    async createAgentContract(from){
-        await this.contract.createAgentContract(50,50,50,{from});
-    }
+   /* async createAgentContract(from){
+        await this.contract.createAgentContract(1,1,50,{from});
+    }*/
 
     async getRegistrationStatus(agentAddress){
         let status= await this.contract.getRegistrationStatus(agentAddress);

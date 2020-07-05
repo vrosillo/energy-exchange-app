@@ -58,25 +58,25 @@ contract EnergyExchange is Ownable{
     ///////////////////////
     //Agents registration//
     ///////////////////////
-    event onAgentContractCreated(uint a,address b,address c,bool d);
+    //event onAgentContractCreated(uint a,address b,/*address c,*/bool d);
     
-    function createAgentContract(uint _agentID,uint _agentCreationDate, uint _agentAvailableEnergyToSell) public{
+    function createAgentContract(uint _agentID/*,uint _agentCreationDate, uint _agentAvailableEnergyToSell*/) public{
         //check that the agent has not been registered already
         require(agents[msg.sender].agentIsMember==false,"The agent is already registered");
         
         //Create new contract Agent
-        address newAgent =new Agent(msg.sender,_agentID,_agentCreationDate,_agentAvailableEnergyToSell,this);
+        //address newAgent =new Agent(msg.sender,_agentID,_agentCreationDate,_agentAvailableEnergyToSell,this);
         
         //Store the agent address and the address of the created contract in the system
         Agent1 storage newAgent1 = agents[msg.sender];
         
-        newAgent1.agentId=_agentID;
-        newAgent1.agentAddress=msg.sender;
-        newAgent1.agentContractAddress=newAgent;
-        newAgent1.agentIsMember=true;
+        newAgent1.agentId = _agentID;
+        newAgent1.agentAddress = msg.sender;
+        //newAgent1.agentContractAddress=newAgent;
+        newAgent1.agentIsMember = true;
         
         //emit the event
-        emit onAgentContractCreated(_agentID,msg.sender,newAgent,true);
+        //emit onAgentContractCreated(_agentID,msg.sender,/*newAgent,*/true);
       
     }
    

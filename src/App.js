@@ -39,10 +39,22 @@ export class App extends Component {
           inputSellOrderId: undefined,
           inputSellerOrderAddress: undefined,
           inputCancelSellOrderId:undefined,
+          //agentInstance
+          agentInstance:undefined,
+          agentInstances :[],
+          agentInstanceObject : {
+            account:undefined,
+            instance:undefined
+          },
           //agents elements
           availableEnergyToSell:undefined
           
         };
+      
+        
+
+       
+
 
         //input change instance
         this.unitsOfEnergyChange=this.unitsOfEnergyChange.bind(this);
@@ -60,12 +72,21 @@ export class App extends Component {
 
         //defines an instance of the contact exchange
         this.exchange = await ExchangeContract(this.web3.currentProvider);
+        console.log("the address of the echange contract is:" + this.exchange.address)
         this.exchangeService = new ExchangeService(this.exchange);
         
         //utilities
         this.toEther = converter(this.web3);
 
         var account = (await this.web3.eth.getAccounts())[0];
+
+        //index of current instance
+        
+        let index = this.state.agentInstances.findIndex(x => x.account === this.state.account);
+
+        console.log('the showed load instances are'+this.state.agentInstances);
+
+        console.log('the index of the current instance is: '+index);
 
         //metamask method that refresh the active account in the web
         this.web3.currentProvider.publicConfigStore.on('update',async function(event){
@@ -87,6 +108,7 @@ export class App extends Component {
         },()=>{
           this.load();
         });
+
     }
 
     /////////////////////
@@ -126,13 +148,48 @@ export class App extends Component {
 
 
     async newAgent(){
+      
+      /* 1) Create new agent contract */
+            
       //await this.exchangeService.createAgentContract(this.state.account);
 
-      await this.exchange.createAgentContract(1,22062020,50, {from:this.state.account});
+      //await this.exchange.createAgentContract(1,15041993,50,{from:this.state.account});
       //this.agent = await AgentContract(this.web3.currentProvider);
-      let adagent = await this.getAgentContractAddress();
+      
+      let agentInstance = await AgentContract(this.web3.currentProvider,this.exchange.address,this.state.account);
+
+      this.state.agentInstanceObject.account = this.state.account;
+      this.state.agentInstanceObject.instance = agentInstance;
+      this.state.agentInstances.push(this.state.agentInstanceObject);
+
+      console.log(" the new contract instance is : "+this.state.agentInstances);
+
+      /* 2) Interact with the new agent deployed contract by getting its details(luego podria interactuar con la dirección del nuevo contrato desde afuera)*/
+
+      let agentDetails = await agentInstance.getAgentDetails({from:this.state.account});
+      const {0:agentAddress,1:agentId,2:agentCreationDate,3:agentAvailableEnergyToSell}=agentDetails;
+      console.log('the agent details of the deployed agent contract are agentAddress,agentID,agentCreationDate,agentAvailableEnergyToSell:  '+ agentDetails);
+      
+      /* 3) Register the new agent contract in the exchange and get its details
+            It should return that the agent is register and no contract address is informed because we commented 
+            that part on the EnergyExchange contract*/
+     
+      await this.exchange.createAgentContract(agentId,{from:this.state.account});
+      let deployedAgentContractDetails = await this.exchange.getDeployedContractAgentDetails({from:this.state.account});
+      console.log('the deployedagentcontract details agentId,agentAddress, agentContractAddress,agentIsMember: ' +deployedAgentContractDetails);
+      
+      
+      /* 4) Add a new sell from the agent contract*/
+
+      await agentInstance.addSellOrder(10,10,{from:this.state.account});
+      
+      /* old code to be removed when i am ready
+      //let adagent = await this.getAgentContractAddress();
+      let deployedagentdetails = await this.exchange.getDeployedContractAgentDetails();
+      console.log('new agent deployed details: agentId, agentAddress,agentContractAddress, agentIsMember:  '+deployedagentdetails)
+      
       //let agentC = await AgentContract.at(adagent);
-      let agent= await AgentContract(this.web3.currentProvider,adagent,this.state.account);
+      /*let agent= await AgentContract(this.web3.currentProvider,adagent,this.state.account);
       
       let agentcontractdetails = await agent.getAgentDetails();
       console.log('detalles del contrato agente desplegado'+agentcontractdetails);
@@ -140,9 +197,11 @@ export class App extends Component {
       console.log('cuenta agente que llama sellorder'+this.state.account);
 
       await agent.addSellOrder(10,10,{from:this.state.account});
-
+  
       
       //await this.agentService.newBuy(this.state.account);
+      
+     */
     }
 
     //////////////////
@@ -165,8 +224,16 @@ export class App extends Component {
     }
 
     //functions from agent contract//
+
     async agentAddOffer(){
-      await this.agentService.newSell(/*this.state.account,this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,*/this.state.account);
+      
+      console.log(this.state.agentInstance);
+      await this.state.agentInstance.addSellOrder(20,10,{from:this.state.account});
+
+      console.log(agentInstances);
+      
+      
+      
     }
 
     async agentGetDetails(){
@@ -249,7 +316,7 @@ export class App extends Component {
                     onChange={this.unitsOfEnergyChange}
                   />
                   <br></br>
-                  <button onClick={()=> this.addOffer()}>AddSellOffer</button>   
+                  <button onClick={()=> this.agentAddOffer()}>AddSellOffer</button>   
               </div>
               <div className="col-sm">
                   <h4>Sell Order Id</h4>
