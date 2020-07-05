@@ -49,16 +49,17 @@ export class ExchangeService{
     ///////////////////
     //Agent functions//
     ///////////////////
-    async getAgentContracts(){
-        let agentDetails = await this.contract.getDeployedContractAgentDetails();
+    async getAgentContracts(from){
+        let agentDetails = await this.contract.getDeployedContractAgentDetails({from});
 
         const {0:agentId,1:agentAddress,2:agentContractAddress,3:agentIsMember}=agentDetails;
         console.log(agentId.toNumber(),agentAddress,agentContractAddress,agentIsMember);
+        return agentContractAddress;
         
     }
 
     async createAgentContract(from){
-        await this.contract.createAgentContract(1,1,10,{from});
+        await this.contract.createAgentContract(50,50,50,{from});
     }
 
     async getRegistrationStatus(agentAddress){

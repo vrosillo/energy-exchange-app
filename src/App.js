@@ -6,6 +6,8 @@ import ReactDOM from "react-dom";
 import ExchangeContract from './ContractsInteraction/exchange';
 import {ExchangeService} from './ContractsInteraction/exchangeService';
 
+import AgentContract from './ContractsInteraction/agent';
+import {AgentService} from './ContractsInteraction/agentService';
 
 //Import Visual Components
 import Panel from "./MyComponents/Panel";
@@ -36,7 +38,9 @@ export class App extends Component {
           inputPricePerUnit: undefined,
           inputSellOrderId: undefined,
           inputSellerOrderAddress: undefined,
-          inputCancelSellOrderId:undefined
+          inputCancelSellOrderId:undefined,
+          //agents elements
+          availableEnergyToSell:undefined
           
         };
 
@@ -99,6 +103,10 @@ export class App extends Component {
     //Agent functions//
     ///////////////////
 
+    async getDeployedContractDetails(){
+      await this.exchangeService.getAgentContracts(this.state.account);
+    }
+
     async getRegStatus(){
       let isMember= await this.exchangeService.getRegistrationStatus(this.state.account);
       let display;
@@ -118,7 +126,23 @@ export class App extends Component {
 
 
     async newAgent(){
-      await this.exchangeService.createAgentContract(this.state.account);
+      //await this.exchangeService.createAgentContract(this.state.account);
+
+      await this.exchange.createAgentContract(1,22062020,50, {from:this.state.account});
+      //this.agent = await AgentContract(this.web3.currentProvider);
+      let adagent = await this.getAgentContractAddress();
+      //let agentC = await AgentContract.at(adagent);
+      let agent= await AgentContract(this.web3.currentProvider,adagent,this.state.account);
+      
+      let agentcontractdetails = await agent.getAgentDetails();
+      console.log('detalles del contrato agente desplegado'+agentcontractdetails);
+      //this.agentService = new AgentService(this.agent);
+      console.log('cuenta agente que llama sellorder'+this.state.account);
+
+      await agent.addSellOrder(10,10,{from:this.state.account});
+
+      
+      //await this.agentService.newBuy(this.state.account);
     }
 
     //////////////////
@@ -136,13 +160,25 @@ export class App extends Component {
       });
     }
 
+    async getAgentContractAddress(){
+      return await this.exchangeService.getAgentContracts();
+    }
+
     //functions from agent contract//
-    /*async AgentGetOffer() {
-      let agentSellOffers = await this.exchangeService.agentGetSellOffers(agentABI);
+    async agentAddOffer(){
+      await this.agentService.newSell(/*this.state.account,this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,*/this.state.account);
+    }
+
+    async agentGetDetails(){
+      if(this.state.availableEnergyToSell!= undefined)
+      {
+      let availableEnergyToSell = await this.agentService.getAgentDetails();
+      console.log('available energy to sell: ' + availableEnergyToSell );
       this.setState({
-        agentSellOffers
+        availableEnergyToSell
       });
-    }*/
+      }
+    }
 
     //////////////////////////
     //Input update functions//
@@ -183,6 +219,8 @@ export class App extends Component {
       this.getBalance();
       this.getOffer();
       this.getRegStatus();
+      this.agentGetDetails();
+      this.getDeployedContractDetails();
       
     }
 
