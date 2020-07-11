@@ -53,7 +53,7 @@ export class ExchangeService{
         let agentDetails = await this.contract.getDeployedContractAgentDetails({from});
 
         const {0:agentId,1:agentAddress,2:agentContractAddress,3:agentIsMember}=agentDetails;
-        console.log(agentId.toNumber(),agentAddress,agentContractAddress,agentIsMember);
+        //console.log(agentId.toNumber(),agentAddress,agentContractAddress,agentIsMember);
         return agentContractAddress;
         
     }
