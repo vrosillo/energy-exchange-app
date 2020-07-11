@@ -411,7 +411,7 @@ export class App extends Component {
           "type": "function"
         }
       ]);
-      var contractInstance = AgentContract.at(this.state.agentInstance);
+      var contractInstance = await AgentContract.at(this.state.agentInstance);
 
       console.log('the contract instance retrieved by the abi and its address',contractInstance);
 
