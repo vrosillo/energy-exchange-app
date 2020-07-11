@@ -18,6 +18,11 @@ contract EnergyExchange is Ownable{
      
     mapping (address => Agent1) public agents; 
     
+     struct Info {
+        Agent ainstance;
+    }
+    mapping (address => Info) public contractInstance;
+    
     //////////////////
     //Sell variables//
     //////////////////
@@ -89,7 +94,16 @@ contract EnergyExchange is Ownable{
     function getRegistrationStatus(address _agent) external view returns (bool){
         return (agents[_agent].agentIsMember);
     }
+
+    function addAgentContractInstance(Agent _contractInstance) public{
+        contractInstance[msg.sender].ainstance = _contractInstance;
+       
+    }
     
+    function getAgentContractInstance() public view returns (Agent){
+        //return contractInstance[msg.sender];
+        return contractInstance[msg.sender].ainstance;
+    }
 
     
     //////////////////
