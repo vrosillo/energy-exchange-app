@@ -218,8 +218,10 @@ export class App extends Component {
     //////////////////
 
     async addOffer(){
-      //await this.exchangeService.newSell(this.state.account,this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,this.state.account);
-      await this.state.agentInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit);
+     
+      await this.exchangeService.newSell(this.state.account,this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,this.state.account);
+      
+      
     }
 
     async getOffer() {
@@ -237,10 +239,183 @@ export class App extends Component {
 
     async agentAddOffer(){
       
-      //console.log(this.state.agentInstance);
-      await this.state.agentInstance.instance.addSellOrder(20,10,{from:this.state.account});
+      //a )new from the agent inself not working yet
+      //await this.state.agentInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit);
+      //let agentInstance= await this.exchange.getAgentContractInstance({from:this.state.account});
+      //await agentInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
 
-      //console.log(agentInstances);
+      //b ) new from the agent itself new option
+
+      var AgentContract = web3.eth.contract([
+        {
+          "inputs": [
+            {
+              "name": "_agentAddress",
+              "type": "address"
+            },
+            {
+              "name": "_agentID",
+              "type": "uint256"
+            },
+            {
+              "name": "_agentCreationDate",
+              "type": "uint256"
+            },
+            {
+              "name": "_agentAvailableEnergyToSell",
+              "type": "uint256"
+            },
+            {
+              "name": "_exchangeAddress",
+              "type": "address"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "a",
+              "type": "uint256"
+            }
+          ],
+          "name": "onAvailableEnergyToSellUpdated",
+          "type": "event"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_agentAvailableEnergyToSell",
+              "type": "uint256"
+            }
+          ],
+          "name": "updateAvailableEnergyToSell",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "getAgentDetails",
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            },
+            {
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_pricePerUnit",
+              "type": "uint256"
+            },
+            {
+              "name": "_unit",
+              "type": "uint256"
+            }
+          ],
+          "name": "addSellOrder",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "getSellOffers",
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256[]"
+            },
+            {
+              "name": "",
+              "type": "address[]"
+            },
+            {
+              "name": "",
+              "type": "uint256[]"
+            },
+            {
+              "name": "",
+              "type": "uint256[]"
+            },
+            {
+              "name": "",
+              "type": "uint256[]"
+            },
+            {
+              "name": "",
+              "type": "bool[]"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_sellOrderId",
+              "type": "uint256"
+            }
+          ],
+          "name": "cancelAddedSellOrder",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_sellOrderId",
+              "type": "uint256"
+            },
+            {
+              "name": "_sellerAddress",
+              "type": "address"
+            }
+          ],
+          "name": "buyEnergy",
+          "outputs": [],
+          "payable": true,
+          "stateMutability": "payable",
+          "type": "function"
+        }
+      ]);
+      var contractInstance = AgentContract.at(this.state.agentInstance);
+
+      console.log('the contract instance retrieved by the abi and its address',contractInstance);
+
+      await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
       
       
       
