@@ -7,7 +7,6 @@ import ExchangeContract from './ContractsInteraction/exchange';
 import {ExchangeService} from './ContractsInteraction/exchangeService';
 
 import AgentContract from './ContractsInteraction/agent';
-import {AgentService} from './ContractsInteraction/agentService';
 
 //Import Visual Components
 import Panel from "./MyComponents/Panel";
@@ -43,13 +42,13 @@ export class App extends Component {
           agentInstance:undefined,
           
           //agents elements
-          availableEnergyToSell:undefined
+          agentAvailableEnergyToSell:undefined,
+          agentId:undefined,
+          agentAddress:undefined,
+          agentCreationDate:undefined
           
         };
       
-        
-
-
         //input change instance
         this.unitsOfEnergyChange=this.unitsOfEnergyChange.bind(this);
         this.pricePerUnitChange=this.pricePerUnitChange.bind(this);
@@ -59,7 +58,6 @@ export class App extends Component {
 
     }  
 
-    async componentDidUpdate(){}
     async componentDidMount(){
         //define our instaled version of Web3 as the libary to be run on the browser
         this.web3 = await getWeb3();
@@ -73,14 +71,6 @@ export class App extends Component {
         this.toEther = converter(this.web3);
 
         var account = (await this.web3.eth.getAccounts())[0];
-
-        //index of current instance
-        
-        //let index = this.state.agentInstances.findIndex(x => x.account === this.state.account);
-
-        
-        
-
 
         //metamask method that refresh the active account in the web
         this.web3.currentProvider.publicConfigStore.on('update',async function(event){
@@ -108,120 +98,15 @@ export class App extends Component {
 
     }
 
-    /////////////////////
-    //Account functions//
-    /////////////////////
+    //////////////////////////////
+    //Market Dashboard functions//
+    //////////////////////////////
 
     async getBalance(){
       let weiBalance = await this.web3.eth.getBalance(this.state.account);
       this.setState({
         balance:this.toEther(weiBalance)
       });
-    }
-    ///////////////////
-    //Agent functions//
-    ///////////////////
-
-    async getDeployedContractDetails(){
-      await this.exchangeService.getAgentContracts(this.state.account);
-    }
-
-    async getRegStatus(){
-      let isMember= await this.exchangeService.getRegistrationStatus(this.state.account);
-      let display;
-      if(isMember==true){
-        isMember='true';
-        display=true;
-      }else{
-        isMember='false';
-        display=false;
-      }
-      this.setState({
-        isMember,
-        display
-      });
-      
-    }
-
-    async AddA(){
-     //let a =  await this.exchange.getAgentContractInstance({from:this.state.account});
-     
-     console.log('la instancia guardada es: ',this.state.agentInstance);
-    };
-
-    
-    
-     
-
-     
-
-    async newAgent(){
-      
-      /* 1) Create new agent contract */
-            
-      //await this.exchangeService.createAgentContract(this.state.account);
-
-      //await this.exchange.createAgentContract(1,15041993,50,{from:this.state.account});
-      //this.agent = await AgentContract(this.web3.currentProvider);
-      
-      let agentInstance = await AgentContract(this.web3.currentProvider,this.exchange.address,this.state.account);
-
-      
-
-      /* 2) Save the instance in the contractIntance mapping on the blockchain */
-      
-      
-      console.log('the agent instace is',agentInstance);
-      console.log('the agent instance to address is',agentInstance.address);
-      
-      await this.exchange.addAgentContractInstance(agentInstance.address,{from:this.state.account});     
-
-      
-      /* 3) Register the new agent contract in the exchange and get its details*/
-      /*  Interact with the new agent deployed contract by getting its details(luego podria interactuar con la dirección del nuevo contrato desde afuera)*/
-      //este paso si funciona lo del mapping me lo puedo saltar)
-      let agentDetails = await agentInstance.getAgentDetails({from:this.state.account});
-      const {0:agentAddress,1:agentId,2:agentCreationDate,3:agentAvailableEnergyToSell}=agentDetails;
-      await this.exchange.createAgentContract(agentId,{from:this.state.account});
-      //let deployedAgentContractDetails = await this.exchange.getDeployedContractAgentDetails({from:this.state.account});
-      //console.log('the deployedagentcontract details agentId,agentAddress, agentContractAddress,agentIsMember: ' +deployedAgentContractDetails);
-      
-      
-      /* 5) Add a new sell from the agent contract*/
-
-      //await agentInstance.addSellOrder(10,10,{from:this.state.account});
-      
-      /* old code to be removed when i am ready
-      //let adagent = await this.getAgentContractAddress();
-      let deployedagentdetails = await this.exchange.getDeployedContractAgentDetails();
-      console.log('new agent deployed details: agentId, agentAddress,agentContractAddress, agentIsMember:  '+deployedagentdetails)
-      
-      //let agentC = await AgentContract.at(adagent);
-      /*let agent= await AgentContract(this.web3.currentProvider,adagent,this.state.account);
-      
-      let agentcontractdetails = await agent.getAgentDetails();
-      console.log('detalles del contrato agente desplegado'+agentcontractdetails);
-      //this.agentService = new AgentService(this.agent);
-      console.log('cuenta agente que llama sellorder'+this.state.account);
-
-      await agent.addSellOrder(10,10,{from:this.state.account});
-  
-      
-      //await this.agentService.newBuy(this.state.account);
-      
-     */
-    }
-
-    
-    //////////////////
-    //Sell functions//
-    //////////////////
-
-    async addOffer(){
-     
-      await this.exchangeService.newSell(this.state.account,this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,this.state.account);
-      
-      
     }
 
     async getOffer() {
@@ -231,21 +116,85 @@ export class App extends Component {
       });
     }
 
-    async getAgentContractAddress(){
-      return await this.exchangeService.getAgentContracts();
-    }
+    //getBuyOffers()
 
-    //functions from agent contract//
+    async newAgent(){
+      
+      /* 1) Create new agent contract */
+      let agentInstance = await AgentContract(this.web3.currentProvider,this.exchange.address,this.state.account,{from:this.state.account});
+
+      /* 2) Save the instance in the contractIntance mapping on the blockchain */
+      await this.exchange.addAgentContractInstance(agentInstance.address,{from:this.state.account});     
+
+      /* 3) Register the new agent contract in the exchange*/
+      let agentDetails = await agentInstance.getAgentDetails({from:this.state.account});
+      const {0:agentAddress,1:agentId,2:agentCreationDate,3:agentAvailableEnergyToSell}=agentDetails;
+      await this.exchange.createAgentContract(agentId,{from:this.state.account});
+
+    }
+    /////////////////////////////
+    //Agent Operation Dashboard//
+    /////////////////////////////
 
     async agentAddOffer(){
+
+      let contractInstance = await this.getAgentInstance();
+
+      await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
       
-      //a )new from the agent inself not working yet
-      //await this.state.agentInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit);
-      //let agentInstance= await this.exchange.getAgentContractInstance({from:this.state.account});
-      //await agentInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
+    }
 
-      //b ) new from the agent itself new option
+    async agentBuyEnergy(){
 
+      let contractInstance = await this.getAgentInstance();
+
+      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account});
+      
+    }
+
+    async agentCancelSellOffer(){
+
+      let contractInstance = await this.getAgentInstance();
+
+      await contractInstance.cancelAddedSellOrder(this.state.inputCancelSellOrderId,{from:this.state.account});
+      
+    }
+
+    ///////////////////////////
+    //Agent Details Dashboard//
+    ///////////////////////////
+    
+    async agentGetDetails(){
+
+      
+      let contractInstance = await this.getAgentInstance();
+      console.log('contract instance executed, the instance is: ',contractInstance);
+
+      let details = await contractInstance.getAgentDetails({from:this.state.account});
+
+      console.log('function get agentdetails executed');
+
+      /*
+      const {0:_agentAddress,1:_agentId,2:_agentCreationDate,3:_agentAvailableEnergyToSell}=details;
+
+      console.log('the agent get details are: ',details);
+      
+      this.setState({
+        agentAvailableEnergyToSell:_agentAvailableEnergyToSell,
+        agentId:_agentId,
+        agentAddress:_agentAddress,
+        agentCreationDate:_agentCreationDate
+      });
+
+      */
+      
+    }
+
+    ////////////////////////
+    //Supportive functions//
+    ////////////////////////
+
+    async getAgentInstance(){
       var AgentContract = web3.eth.contract([
         {
           "inputs": [
@@ -411,33 +360,35 @@ export class App extends Component {
           "type": "function"
         }
       ]);
-      var contractInstance = await AgentContract.at(this.state.agentInstance);
+      return await AgentContract.at(this.state.agentInstance,{from:this.state.account});
+    };
 
-      console.log('the contract instance retrieved by the abi and its address',contractInstance);
+    async getDeployedContractDetails(){
+      await this.exchangeService.getAgentContracts(this.state.account);
+    };
 
-      await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
-      
-      
-      
-    }
-
-    async agentGetDetails(){
-      if(this.state.availableEnergyToSell!= undefined)
-      {
-      let availableEnergyToSell = await this.agentService.getAgentDetails();
-      //console.log('available energy to sell: ' + availableEnergyToSell );
-      this.setState({
-        availableEnergyToSell
-      });
+    async getRegStatus(){
+      let isMember= await this.exchangeService.getRegistrationStatus(this.state.account);
+      let display;
+      if(isMember==true){
+        isMember='true';
+        display=true;
+      }else{
+        isMember='false';
+        display=false;
       }
+      this.setState({
+        isMember,
+        display
+      });
+      
     }
+
+    
 
     //////////////////////////
     //Input update functions//
     //////////////////////////
-    
-    
-    
     
     unitsOfEnergyChange(event) {
       this.setState({inputUnitsOfEnergy: event.target.value})      
@@ -469,10 +420,16 @@ export class App extends Component {
      
     async load(){
       this.getBalance();
-      this.getOffer();
       this.getRegStatus();
-      this.agentGetDetails();
-      this.getDeployedContractDetails();  
+      this.getOffer();
+
+      if(this.state.isMember=='true'){
+        this.agentGetDetails();
+      }
+      
+      
+      //this.getDeployedContractDetails(); 
+ 
     }
 
     render() {
@@ -512,7 +469,7 @@ export class App extends Component {
                     onChange={this.sellerOrderAddressChange}
                   />
                   <br></br>
-                  <button>Buy energy</button>
+                  <button onClick={()=> this.agentBuyEnergy()}>Buy energy</button>   
               </div>
               <div className="col-sm">
                   <h4>Sell Order Id</h4>
@@ -520,7 +477,7 @@ export class App extends Component {
                     onChange={this.cancelSellOrderIdChange}
                   />
                   <br></br>
-                  <button>Cancel sell offer</button>
+                  <button onClick={()=> this.agentCancelSellOffer()}>Cancel sell offer</button>  
               </div>
           </div>
           
@@ -539,13 +496,13 @@ export class App extends Component {
               <br/>
               <br/>
               <div className="col-sm">
-                <span><strong>Id</strong></span>
+                <span><strong>Id</strong>: {this.state.agentId}</span>
               </div>
               <div className="col-sm">
-                <span><strong>Contract Address</strong></span>
+                <span><strong>Contract Address</strong>: {this.state.agentAddress}</span>
               </div>
               <div className="col-sm">
-                <span><strong>Energy available to sell</strong></span>
+                <span><strong>Energy available to sell</strong>: {this.state.agentAvailableEnergyToSell}</span>
               </div>          
             </div>
 
@@ -591,13 +548,7 @@ export class App extends Component {
               </div>
               <div className="col-sm">
                 <span><strong>Is Member?</strong> {this.state.isMember}</span>
-              </div>    
-              <div className="col-sm">
-              
-                <span><strong>Value of a: </strong> {this.state.a}</span>
-                <button onClick={()=> this.AddA()}>AddA</button>   
-              </div>   
-              
+              </div>                  
               <div className="col-sm">
                 
                 {noShowAgent}
