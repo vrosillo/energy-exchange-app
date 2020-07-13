@@ -168,15 +168,17 @@ export class App extends Component {
       
       let contractInstance = await this.getAgentInstance();
       console.log(contractInstance);
+      
       let details = await contractInstance.getAgentDetails({from:this.state.account},function(error,result){
         if (error){
-          console.log("error al ejectuar la funcion",error);
+          console.log("Error",error);
         }
         else {
-          console.log("ha ido bien",result);
-          //const {0:_agentAddress,1:_agentId,2:_agentCreationDate,3:_agentAvailableEnergyToSell}=details;
 
-          console.log('the agent get details are: ',result);
+          const {0:_agentAddress,1:_agentId,2:_agentCreationDate,3:_agentAvailableEnergyToSell}=result;
+
+          console.log('the agent get details are: ',result,_agentAddress,_agentId.toNumber());
+          return _agentId.toNumber();          
         }
       });
 
