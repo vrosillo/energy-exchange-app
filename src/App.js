@@ -93,8 +93,7 @@ export class App extends Component {
         },()=>{
           this.load();
         });
-        
-        
+          
 
     }
 
@@ -165,12 +164,21 @@ export class App extends Component {
     ///////////////////////////
     
     async agentGetDetails(){
-
+      
       
       let contractInstance = await this.getAgentInstance();
-      console.log('contract instance executed, the instance is: ',contractInstance);
+      console.log(contractInstance);
+      let details = await contractInstance.getAgentDetails.sendTransaction({from:this.state.account},function(error,result){
+        if (error){
+          console.log("error al ejectuar la funcion",error);
+        }
+        else {
+          console.log("ha ido bien",result);
+        }
+      });
 
-      let details = await contractInstance.getAgentDetails({from:this.state.account});
+
+      
 
       console.log('function get agentdetails executed');
 
@@ -195,7 +203,8 @@ export class App extends Component {
     ////////////////////////
 
     async getAgentInstance(){
-      var AgentContract = web3.eth.contract([
+      
+      var AgentContract =  web3.eth.contract([
         {
           "inputs": [
             {
@@ -360,7 +369,7 @@ export class App extends Component {
           "type": "function"
         }
       ]);
-      return await AgentContract.at(this.state.agentInstance,{from:this.state.account});
+      return await AgentContract.at(this.state.agentInstance);
     };
 
     async getDeployedContractDetails(){
@@ -423,8 +432,9 @@ export class App extends Component {
       this.getRegStatus();
       this.getOffer();
 
+      
       if(this.state.isMember=='true'){
-        this.agentGetDetails();
+        //this.agentGetDetails();
       }
       
       
@@ -511,8 +521,7 @@ export class App extends Component {
               <h3>Smart Meter Real Time Data</h3>
               <div className="col-sm">
                 <h4>Sell Order Id</h4>
-                
-                <button>Update energy available to sell</button>
+                <button onClick={()=> this.agentGetDetails()}>Update energy available to sell</button>   
               </div>
               
             </div>
