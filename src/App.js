@@ -167,21 +167,6 @@ export class App extends Component {
     ///////////////////////////
     //Agent Details Dashboard//
     ///////////////////////////
-
-    async  f() {
-      let contractInstance = await this.getAgentInstance();
-      try {
-        
-        a= 'jola'
-      } catch(err) {
-        alert(err); // TypeError: failed to fetch
-      }
-    }
-
-    async abc(){
-      let a=f();
-      console.log(a);
-    }
     
     async agentGetDetails(){
       
@@ -208,25 +193,6 @@ export class App extends Component {
           });         
         }
       }.bind(this));
-
-
-      
-
-      console.log('function get agentdetails executed',details);
-
-      /*
-      const {0:_agentAddress,1:_agentId,2:_agentCreationDate,3:_agentAvailableEnergyToSell}=details;
-
-      console.log('the agent get details are: ',details);
-      
-      this.setState({
-        agentAvailableEnergyToSell:_agentAvailableEnergyToSell,
-        agentId:_agentId,
-        agentAddress:_agentAddress,
-        agentCreationDate:_agentCreationDate
-      });
-
-      */
       
     }
 
@@ -466,7 +432,7 @@ export class App extends Component {
 
       
       if(this.state.isMember=='true'){
-        //this.agentGetDetails();
+        this.agentGetDetails();
       }
       
       
@@ -557,7 +523,6 @@ export class App extends Component {
               <div className="col-sm">
                 <h4>Sell Order Id</h4>
                 <button onClick={()=> this.agentGetDetails()}>Update energy available to sell</button>   
-                <button onClick={()=> this.abc()}>abc</button>
               </div>
               
             </div>
