@@ -72,6 +72,9 @@ export class App extends Component {
 
         var account = (await this.web3.eth.getAccounts())[0];
 
+        //this feature is no longer available
+        /*
+
         //metamask method that refresh the active account in the web
         this.web3.currentProvider.publicConfigStore.on('update',async function(event){
           this.setState({
@@ -80,6 +83,8 @@ export class App extends Component {
             this.load();
           });
         }.bind(this));
+
+        */
         
         this.setState({
           account: account
@@ -162,6 +167,21 @@ export class App extends Component {
     ///////////////////////////
     //Agent Details Dashboard//
     ///////////////////////////
+
+    async  f() {
+      let contractInstance = await this.getAgentInstance();
+      try {
+        
+        a= 'jola'
+      } catch(err) {
+        alert(err); // TypeError: failed to fetch
+      }
+    }
+
+    async abc(){
+      let a=f();
+      console.log(a);
+    }
     
     async agentGetDetails(){
       
@@ -178,9 +198,16 @@ export class App extends Component {
           const {0:_agentAddress,1:_agentId,2:_agentCreationDate,3:_agentAvailableEnergyToSell}=result;
 
           console.log('the agent get details are: ',result,_agentAddress,_agentId.toNumber());
-          return _agentId.toNumber();          
+          this.setState({
+
+            agentId:_agentId.toNumber(),
+            agentAddress:_agentAddress,
+            agentCreationDate:_agentCreationDate.toNumber(),
+            agentAvailableEnergyToSell:_agentAvailableEnergyToSell.toNumber()
+
+          });         
         }
-      });
+      }.bind(this));
 
 
       
@@ -517,6 +544,9 @@ export class App extends Component {
                 <span><strong>Contract Address</strong>: {this.state.agentAddress}</span>
               </div>
               <div className="col-sm">
+                <span><strong>Agent Creation Date</strong>: {this.state.agentCreationDate}</span>
+              </div>
+              <div className="col-sm">
                 <span><strong>Energy available to sell</strong>: {this.state.agentAvailableEnergyToSell}</span>
               </div>          
             </div>
@@ -527,6 +557,7 @@ export class App extends Component {
               <div className="col-sm">
                 <h4>Sell Order Id</h4>
                 <button onClick={()=> this.agentGetDetails()}>Update energy available to sell</button>   
+                <button onClick={()=> this.abc()}>abc</button>
               </div>
               
             </div>
