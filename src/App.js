@@ -38,6 +38,7 @@ export class App extends Component {
           inputSellOrderId: undefined,
           inputSellerOrderAddress: undefined,
           inputCancelSellOrderId:undefined,
+          inputAvailableEnergyToSell:undefined,
           //agentInstance
           agentInstance:undefined,
           
@@ -55,6 +56,7 @@ export class App extends Component {
         this.sellOrderIdChange=this.sellOrderIdChange.bind(this);
         this.sellerOrderAddressChange=this.sellerOrderAddressChange.bind(this);
         this.cancelSellOrderIdChange=this.cancelSellOrderIdChange.bind(this);
+        this.availableEnergyToSellChange=this.availableEnergyToSellChange.bind(this);
 
     }  
 
@@ -85,6 +87,8 @@ export class App extends Component {
         }.bind(this));
 
         */
+
+        
         
         this.setState({
           account: account
@@ -124,16 +128,23 @@ export class App extends Component {
 
     async newAgent(){
       
+      console.log('step 0 completed');
       /* 1) Create new agent contract */
       let agentInstance = await AgentContract(this.web3.currentProvider,this.exchange.address,this.state.account,{from:this.state.account});
 
+      console.log('step 1 completed');
+
       /* 2) Save the instance in the contractIntance mapping on the blockchain */
       await this.exchange.addAgentContractInstance(agentInstance.address,{from:this.state.account});     
+
+      console.log('step 2 completed');
 
       /* 3) Register the new agent contract in the exchange*/
       let agentDetails = await agentInstance.getAgentDetails({from:this.state.account});
       const {0:agentAddress,1:agentId,2:agentCreationDate,3:agentAvailableEnergyToSell}=agentDetails;
       await this.exchange.createAgentContract(agentId,{from:this.state.account});
+
+      console.log('step 3 completed');
 
     }
     /////////////////////////////
@@ -144,15 +155,42 @@ export class App extends Component {
 
       let contractInstance = await this.getAgentInstance();
 
-      await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
+      await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account},function(error,result){
+        if (error){
+          console.log("Error",error);
+        }
+        else {
+
+          console.log('successfull sell');
+                 
+        }
+      });
+      
+      //to be removed at the end. this was the old version without the callback
+      //await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account});
       
     }
 
     async agentBuyEnergy(){
 
+      //parece ser que la nueva release a machacado el añadir el value en metamask
+
       let contractInstance = await this.getAgentInstance();
 
-      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account});
+      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account},function(error,result){
+        if (error){
+          console.log("Error",error);
+        }
+        else {
+
+          console.log('successfull buy');
+                 
+        }
+      });
+
+      console.log(this.state.inputSellOrderId,this.state.inputSellerOrderAddress);
+
+      //await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account});
       
     }
 
@@ -160,13 +198,39 @@ export class App extends Component {
 
       let contractInstance = await this.getAgentInstance();
 
-      await contractInstance.cancelAddedSellOrder(this.state.inputCancelSellOrderId,{from:this.state.account});
+      await contractInstance.cancelAddedSellOrder(this.state.inputCancelSellOrderId,{from:this.state.account},function(error,result){
+        if (error){
+          console.log("Error",error);
+        }
+        else {
+
+          console.log('successfull sell');
+                 
+        }
+      });
+
+      
       
     }
 
     ///////////////////////////
     //Agent Details Dashboard//
     ///////////////////////////
+
+    async updateEnergytoSell(){
+      let contractInstance = await this.getAgentInstance();
+
+      await contractInstance.updateAvailableEnergyToSell(this.state.inputAvailableEnergyToSell,{from:this.state.account},function(error,result){
+        if (error){
+          console.log("Error",error);
+        }
+        else {
+
+          console.log('successfull sell');
+                 
+        }
+      });
+    }
     
     async agentGetDetails(){
       
@@ -174,7 +238,7 @@ export class App extends Component {
       let contractInstance = await this.getAgentInstance();
       console.log(contractInstance);
       
-      let details = await contractInstance.getAgentDetails({from:this.state.account},function(error,result){
+      await contractInstance.getAgentDetails({from:this.state.account},function(error,result){
         if (error){
           console.log("Error",error);
         }
@@ -416,6 +480,10 @@ export class App extends Component {
     cancelSellOrderIdChange(event) {
       this.setState({inputCancelSellOrderId: event.target.value})    
     }
+
+    availableEnergyToSellChange(event) {
+      this.setState({inputAvailableEnergyToSell: event.target.value})  
+    }
     
     /*updateUnitsOfEnergy = event =>{
       console.log('event.target.value',event.target.value);
@@ -521,8 +589,12 @@ export class App extends Component {
             <div className="col-sm">
               <h3>Smart Meter Real Time Data</h3>
               <div className="col-sm">
-                <h4>Sell Order Id</h4>
-                <button onClick={()=> this.agentGetDetails()}>Update energy available to sell</button>   
+                <h4>Units of energy</h4>
+                  <input type="text" name="unitsOfEnergy" value ={this.state.inputAvailableEnergyToSell}
+                    onChange={this.availableEnergyToSellChange}
+                  />
+                  <br></br>
+                <button onClick={()=> this.updateEnergytoSell()}>Update energy available to sell</button>   
               </div>
               
             </div>

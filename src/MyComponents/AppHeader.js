@@ -7,7 +7,7 @@ class AppHeader extends Component{
                 <br/>
                 <h1>Welcome to your local Exchange</h1>
                 <br/>
-                <p>Please make sure that you setup first your metamask account</p>
+                <p>Please make sure that you are connected to metamask</p>
                 <br/>
             </div>
         );
