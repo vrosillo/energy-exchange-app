@@ -106,7 +106,7 @@ contract Agent{
         
         //check the buyer is sending the required amount of money (no less or more)
         
-        require(msg.value == totalPrice, "Please, send the exact amount of money");
+        require(msg.value == totalPrice*1000000000000000000, "Please, send the exact amount of money");
         
         //make the payment
         _sellerAddress.transfer(msg.value);

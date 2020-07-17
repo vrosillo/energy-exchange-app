@@ -186,7 +186,7 @@ export class App extends Component {
 
       let contractInstance = await this.getAgentInstance();
 
-      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress ,{from:this.state.account,value:this.state.inputOfferTotalPrice},function(error,result){
+      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress ,{from:this.state.account,value:this.state.inputOfferTotalPrice*1000000000000000000},function(error,result){
         if (error){
           console.log("the error is",error);
 
@@ -535,7 +535,7 @@ export class App extends Component {
           <h2><strong>Agent Operation Dashboard</strong></h2>
           <div className="row">
               <div className="col-sm">
-                  <h4>Price per unit of energy</h4>
+                  <h4>Price per unit of energy (Ether)</h4>
                   <input type="text" name="pricePerUnit" value ={this.state.inputPricePerUnit}
                     onChange={this.pricePerUnitChange}
                   />
@@ -555,7 +555,7 @@ export class App extends Component {
                   <input type="text" name="sellOrderAddress" value ={this.state.inputSellerOrderAddress}
                     onChange={this.sellerOrderAddressChange}
                   />
-                  <h4>Offer total price</h4>
+                  <h4>Offer total price (Ether)</h4>
                   <input type="text" name="offerTotalPrice" value ={this.state.inputOfferTotalPrice}
                     onChange={this.offerTotalPriceChange}
                   />
@@ -661,8 +661,8 @@ export class App extends Component {
                                 <span>Id:{offer.OrderId}  </span>
                                 <span>Agent:{offer.OrderAgent}  </span>
                                 <span>Unit:{offer.OrderUnit}</span>
-                                <span>Price:{offer.OrderPricePerUnit}  </span>
-                                <span>TotalPrice:{offer.OrderTotalPrice}  </span>
+                                <span>Price:{offer.OrderPricePerUnit}  (Ether)  </span>
+                                <span>TotalPrice:{offer.OrderTotalPrice}  (Ether) </span>
                                 <span>IsAvailable:{offer.OrderIsAvailable}  </span>
                                
                             </div>
@@ -676,8 +676,8 @@ export class App extends Component {
                                 <span>Id:{offer.OrderId}  </span>
                                 <span>Buyer:{offer.OrderBuyer}  </span>
                                 <span>Unit:{offer.OrderUnit}</span>
-                                <span>Price:{offer.OrderPricePerUnit}  </span>
-                                <span>TotalPrice:{offer.OrderTotalPrice}  </span>
+                                <span>Price:{offer.OrderPricePerUnit}  (Ether)  </span>
+                                <span>TotalPrice:{offer.OrderTotalPrice}  (Ether) </span>
                                 <span>SellerId:{offer.OrderSellId}  </span>
                             </div>
                         })}
