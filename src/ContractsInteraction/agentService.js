@@ -28,6 +28,6 @@ export class AgentService{
     //Buy functions//
     /////////////////
     async newBuy(from){
-    await this.contract.buyEnergy(1, 0x0afe33b54c95362bdfa58bf4eec9b02ef4dab640, {from} );
+    await this.contract.buyEnergy(4, 0x6b50d7cd0dfdcddf9987477286f6a83dd537543c , {from} );
     }
 }

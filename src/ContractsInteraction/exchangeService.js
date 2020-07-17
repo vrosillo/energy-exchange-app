@@ -68,6 +68,39 @@ export class ExchangeService{
 
     }
 
-   
+
+        async getBuyOffers(){
+        
+            //get buy offers
+            let buyOffers = await this.contract.getBuyOffers();
+            const {0:arrBuyOrderId,1:arrBuyOrderBuyer,2:arrBuyOrderUnit,
+                3:arrBuyOrderPricePerUnit,4:arrBuyOrderTotalPrice,5:arrBuySellOrderId}=buyOffers;
+
+               
+    
+            //get total number of buy offers  
+            let total = arrBuyOrderId.length;
+    
+            //descompose buy offers into objects
+            let offers = [];
+            for (var i = 0; i < total; i++) {
+                let offer = {
+                    OrderId:arrBuyOrderId[i].toNumber(),
+                    OrderBuyer:arrBuyOrderBuyer[i],
+                    OrderUnit:arrBuyOrderUnit[i].toNumber(),
+                    OrderPricePerUnit:arrBuyOrderPricePerUnit[i].toNumber(),
+                    OrderTotalPrice:arrBuyOrderTotalPrice[i].toNumber(),
+                    OrderSellId:arrBuySellOrderId[i].toNumber()
+                }
+                
+                offers.push(offer);
+            }
+    
+            //log
+            //console.log(sellOffers);
+            //console.log(offers);
+    
+            return offers;
+        }
 
 }

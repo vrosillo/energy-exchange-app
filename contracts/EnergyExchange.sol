@@ -120,12 +120,12 @@ contract EnergyExchange is Ownable{
        
       sellOrder storage newSellOrder = sellOrders[sellOrderId];
       
-      newSellOrder.id=sellOrderId;
-      newSellOrder.agent=_agentAddr;
-      newSellOrder.unit=_unit;
-      newSellOrder.pricePerUnit=_pricePerUnit;
-      newSellOrder.totalPrice=_unit*_pricePerUnit;
-      newSellOrder.isAvailable=true;
+      newSellOrder.id = sellOrderId;
+      newSellOrder.agent = _agentAddr;
+      newSellOrder.unit = _unit;
+      newSellOrder.pricePerUnit = _pricePerUnit;
+      newSellOrder.totalPrice = _unit*_pricePerUnit;
+      newSellOrder.isAvailable = true;
       
       //we add the new order id into the validSellOrderIds array
       sellOrdersLenght.push(sellOrderId);

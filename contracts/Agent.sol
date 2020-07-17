@@ -93,7 +93,7 @@ contract Agent{
     /////////////////
     //Buy functions//
     /////////////////
-    function buyEnergy(uint _sellOrderId, address _sellerAddress ) public payable isOwner{
+    function buyEnergy(uint _sellOrderId, address _sellerAddress ) public payable /*isOwner*/{
         uint totalPrice=getTotalPriceOffer(_sellOrderId);
         uint unit = getUnitOffer(_sellOrderId);
         uint pricePerUnit = totalPrice/unit;

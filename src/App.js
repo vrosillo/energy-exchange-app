@@ -29,6 +29,7 @@ export class App extends Component {
           account: undefined,
           balance :0,
           sellOffers: [],
+          buyOffers:[],
           agentSellOffers:[],
           isMember: 'false',
           display:false,
@@ -37,6 +38,7 @@ export class App extends Component {
           inputPricePerUnit: undefined,
           inputSellOrderId: undefined,
           inputSellerOrderAddress: undefined,
+          inputOfferTotalPrice:undefined,
           inputCancelSellOrderId:undefined,
           inputAvailableEnergyToSell:undefined,
           //agentInstance
@@ -55,6 +57,7 @@ export class App extends Component {
         this.pricePerUnitChange=this.pricePerUnitChange.bind(this);
         this.sellOrderIdChange=this.sellOrderIdChange.bind(this);
         this.sellerOrderAddressChange=this.sellerOrderAddressChange.bind(this);
+        this.offerTotalPriceChange=this.offerTotalPriceChange.bind(this);
         this.cancelSellOrderIdChange=this.cancelSellOrderIdChange.bind(this);
         this.availableEnergyToSellChange=this.availableEnergyToSellChange.bind(this);
 
@@ -124,7 +127,14 @@ export class App extends Component {
       });
     }
 
-    //getBuyOffers()
+    async getBuy() {
+      let buyOffers = await this.exchangeService.getBuyOffers();
+      this.setState({
+        buyOffers
+      });
+    }
+
+    
 
     async newAgent(){
       
@@ -155,7 +165,7 @@ export class App extends Component {
 
       let contractInstance = await this.getAgentInstance();
 
-      await contractInstance.addSellOrder(this.state.inputUnitsOfEnergy,this.state.inputPricePerUnit,{from:this.state.account},function(error,result){
+      await contractInstance.addSellOrder(this.state.inputPricePerUnit,this.state.inputUnitsOfEnergy,{from:this.state.account},function(error,result){
         if (error){
           console.log("Error",error);
         }
@@ -171,26 +181,35 @@ export class App extends Component {
       
     }
 
-    async agentBuyEnergy(){
+    async agentBuyEnergy(){ 
+
+      //await this.contract.buyEnergy(4, 0x6b50d7cd0dfdcddf9987477286f6a83dd537543c , {from:this.state.account} );
 
       //parece ser que la nueva release a machacado el añadir el value en metamask
-
       let contractInstance = await this.getAgentInstance();
 
-      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account},function(error,result){
+      console.log('el id que recoge es:', this.state.inputSellOrderId);
+      
+      await contractInstance.buyEnergy(5,this.state.inputSellerOrderAddress ,{from:this.state.account,value:this.state.inputOfferTotalPrice},function(error,result){
         if (error){
-          console.log("Error",error);
+          console.log("ha fallado",error);
+
         }
         else {
 
-          console.log('successfull buy');
-                 
+          console.log('successfull buy',result);
+
+                  
         }
-      });
+      }.bind(this));
+      
+      
 
-      console.log(this.state.inputSellOrderId,this.state.inputSellerOrderAddress);
+      
+      
 
-      //await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account});
+     
+     //await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account});
       
     }
 
@@ -236,7 +255,6 @@ export class App extends Component {
       
       
       let contractInstance = await this.getAgentInstance();
-      console.log(contractInstance);
       
       await contractInstance.getAgentDetails({from:this.state.account},function(error,result){
         if (error){
@@ -246,7 +264,6 @@ export class App extends Component {
 
           const {0:_agentAddress,1:_agentId,2:_agentCreationDate,3:_agentAvailableEnergyToSell}=result;
 
-          console.log('the agent get details are: ',result,_agentAddress,_agentId.toNumber());
           this.setState({
 
             agentId:_agentId.toNumber(),
@@ -477,6 +494,11 @@ export class App extends Component {
       this.setState({inputSellerOrderAddress: event.target.value})     
     }
 
+    offerTotalPriceChange(event) {
+      this.setState({inputOfferTotalPrice: event.target.value})     
+    }
+    
+
     cancelSellOrderIdChange(event) {
       this.setState({inputCancelSellOrderId: event.target.value})    
     }
@@ -497,6 +519,7 @@ export class App extends Component {
       this.getBalance();
       this.getRegStatus();
       this.getOffer();
+      this.getBuy();
 
       
       if(this.state.isMember=='true'){
@@ -543,6 +566,10 @@ export class App extends Component {
                   <h4>Seller agent address</h4>
                   <input type="text" name="sellOrderAddress" value ={this.state.inputSellerOrderAddress}
                     onChange={this.sellerOrderAddressChange}
+                  />
+                  <h4>Offer total price</h4>
+                  <input type="text" name="offerTotalPrice" value ={this.state.inputOfferTotalPrice}
+                    onChange={this.offerTotalPriceChange}
                   />
                   <br></br>
                   <button onClick={()=> this.agentBuyEnergy()}>Buy energy</button>   
@@ -656,7 +683,18 @@ export class App extends Component {
                   </Panel>
               </div>
               <div className="col-sm">
-                <Panel title="Buy Orders"/>
+              <Panel title="Buy Orders">
+                  {this.state.buyOffers.map((offer, i) => {
+                            return <div key={i}>
+                                <span>Id:{offer.OrderId}  </span>
+                                <span>Buyer:{offer.OrderBuyer}  </span>
+                                <span>Unit:{offer.OrderUnit}</span>
+                                <span>Price:{offer.OrderPricePerUnit}  </span>
+                                <span>TotalPrice:{offer.OrderTotalPrice}  </span>
+                                <span>SellerId:{offer.OrderSellId}  </span>
+                            </div>
+                        })}
+                  </Panel>
               </div>
             </div>
           </div>
