@@ -183,16 +183,12 @@ export class App extends Component {
 
     async agentBuyEnergy(){ 
 
-      //await this.contract.buyEnergy(4, 0x6b50d7cd0dfdcddf9987477286f6a83dd537543c , {from:this.state.account} );
 
-      //parece ser que la nueva release a machacado el añadir el value en metamask
       let contractInstance = await this.getAgentInstance();
 
-      console.log('el id que recoge es:', this.state.inputSellOrderId);
-      
-      await contractInstance.buyEnergy(5,this.state.inputSellerOrderAddress ,{from:this.state.account,value:this.state.inputOfferTotalPrice},function(error,result){
+      await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress ,{from:this.state.account,value:this.state.inputOfferTotalPrice},function(error,result){
         if (error){
-          console.log("ha fallado",error);
+          console.log("the error is",error);
 
         }
         else {
@@ -202,14 +198,6 @@ export class App extends Component {
                   
         }
       }.bind(this));
-      
-      
-
-      
-      
-
-     
-     //await contractInstance.buyEnergy(this.state.inputSellOrderId,this.state.inputSellerOrderAddress,{from:this.state.account});
       
     }
 
@@ -596,7 +584,6 @@ export class App extends Component {
 
             <div className="col-sm">
               <h3>Agent</h3>
-              <br/>
               <br/>
               <div className="col-sm">
                 <span><strong>Id</strong>: {this.state.agentId}</span>
