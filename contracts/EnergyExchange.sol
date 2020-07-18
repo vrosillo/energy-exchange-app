@@ -65,7 +65,7 @@ contract EnergyExchange is Ownable{
     ///////////////////////
     //event onAgentContractCreated(uint a,address b,/*address c,*/bool d);
     
-    function createAgentContract(uint _agentID/*,uint _agentCreationDate, uint _agentAvailableEnergyToSell*/) public{
+    function createAgentContract(uint _agentID) public{
         //check that the agent has not been registered already
         require(agents[msg.sender].agentIsMember==false,"The agent is already registered");
         
@@ -112,7 +112,7 @@ contract EnergyExchange is Ownable{
     
     event onSellOrderSaved(uint a,address b,uint c,uint d,uint e,bool f);
     
-    function saveSellOrder(address _agentAddr,uint _pricePerUnit, uint _unit) public {
+    function saveSellOrder(address _agentAddr,uint _pricePerUnit, uint _unit) external {
       //check offer unit is bigger than 0
       require(_unit>0, "You cannot sell 0 units of energy");
       
