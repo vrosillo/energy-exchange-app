@@ -535,11 +535,13 @@ export class App extends Component {
           <h2><strong>Agent Operation Dashboard</strong></h2>
           <div className="row">
               <div className="col-sm">
-                  <h4>Price per unit of energy (Ether)</h4>
+                  <h3>Add sell offer</h3>
+
+                  <p>Price per unit of energy (Ether)</p>
                   <input type="text" name="pricePerUnit" value ={this.state.inputPricePerUnit}
                     onChange={this.pricePerUnitChange}
                   />
-                  <h4>Units of energy</h4>
+                  <p>Units of energy</p>
                   <input type="text" name="unitsOfEnergy" value ={this.state.inputUnitsOfEnergy}
                     onChange={this.unitsOfEnergyChange}
                   />
@@ -547,15 +549,16 @@ export class App extends Component {
                   <button onClick={()=> this.agentAddOffer()}>AddSellOffer</button>   
               </div>
               <div className="col-sm">
-                  <h4>Sell Order Id</h4>
+                  <h3>Buy energy</h3>
+                  <p>Sell Order Id</p>
                   <input type="text" name="sellOrderId" value ={this.state.inputSellOrderId}
                     onChange={this.sellOrderIdChange}
                   />
-                  <h4>Seller agent address</h4>
+                  <p>Seller agent address</p>
                   <input type="text" name="sellOrderAddress" value ={this.state.inputSellerOrderAddress}
                     onChange={this.sellerOrderAddressChange}
                   />
-                  <h4>Offer total price (Ether)</h4>
+                  <p>Offer total price (Ether)</p>
                   <input type="text" name="offerTotalPrice" value ={this.state.inputOfferTotalPrice}
                     onChange={this.offerTotalPriceChange}
                   />
@@ -563,7 +566,8 @@ export class App extends Component {
                   <button onClick={()=> this.agentBuyEnergy()}>Buy energy</button>   
               </div>
               <div className="col-sm">
-                  <h4>Sell Order Id</h4>
+                  <h3>Cancel sell offer</h3>
+                  <p>Sell Order Id</p>
                   <input type="text" name="cancelSellorderId" value ={this.state.inputCancelSellOrderId}
                     onChange={this.cancelSellOrderIdChange}
                   />
@@ -603,7 +607,7 @@ export class App extends Component {
             <div className="col-sm">
               <h3>Smart Meter Real Time Data</h3>
               <div className="col-sm">
-                <h4>Units of energy</h4>
+                <p>Units of energy</p>
                   <input type="text" name="unitsOfEnergy" value ={this.state.inputAvailableEnergyToSell}
                     onChange={this.availableEnergyToSellChange}
                   />
